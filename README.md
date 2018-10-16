@@ -17,7 +17,7 @@ $user = new Miniquent;
 $user->name = '山田太郎';
 $user->score = 78;
 $user->age = 24;
-$user->save();
+$user->save(); 
 ```
 
 で新規登録できます。
