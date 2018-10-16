@@ -75,7 +75,12 @@ class Miniquent
 		}
 		return $ret;
 	}
-
+/**
+ * 一度に表示する量
+ *
+ * @param string $num	一度に表示したい数量
+ * @return object
+ */
 	public function limit ($num){
 		$this->limit = "limit $num";
 		return $this;
