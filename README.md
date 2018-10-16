@@ -49,7 +49,8 @@ scoreが30未満の人だけ削除したいなら……
 
 
 ```php
-Miniquent::where('score','<','30');
+$user= Miniquent::where('score','<','30');
+$user->delete();
 ```
 
 
