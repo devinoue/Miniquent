@@ -44,7 +44,7 @@ class Miniquent
 	{
 		$sql = $this->sql;
 		$value_list = $this->value_list;
-		print $this->sql;
+
 		if ($this->value_list == null) {
 			$stmt = $this->db->query($this->sql);
 			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -65,7 +65,7 @@ class Miniquent
 			$this->db->commit();
 		} catch(Excetipn $e){
 		 $db->rollBack();
-		};
+		}
 		
 		if(!$result) {
 			$this->outputError($sql, $result, $error_msg, $exit_flg);
@@ -99,9 +99,6 @@ class Miniquent
 			return $this->execute();
 		}
 
-		if ($this->limit == '') $this->limit = '';
-		// if (is_array($this->column)) 
-
 		$this->sql = "SELECT * FROM $this->table ". self::$where . " $this->orderby $this->limit";
 		print $this->sql;
 
@@ -129,7 +126,11 @@ class Miniquent
 
 	static function where ($arg1,$arg2,$arg3)
 	{
-		self::$where="WHERE $arg1 $arg2 '$arg3'";
+		if (!self::$where_flg) {
+			self::$where="WHERE $arg1 $arg2 '$arg3'";
+		} else {
+			self::$where .= "AND WHERE $arg1 $arg2 '$arg3'";
+		}
 		self::$where_flg=true;
 		return new static;
 	}
@@ -140,31 +141,30 @@ class Miniquent
 		return $this->execute();
 	}
 
-  // protectedに直す。クラスの中からしか参照不可能に
-  public function save(){
+
+	public function save(){
 		$name_list = "";
 		$prepare_list="";
-  	$flg=false;
-  	//クラス固有のプロパティ
-	  $except = get_class_vars(get_class($this));
-	  $all_object_var = get_object_vars($this);
-	  foreach ($all_object_var as $key => $value) {
-		  if (!array_key_exists($key, $except)){
-			  if (is_array($this->$key)) {
-				  print_r($this->$key);//columnなど
-			  } else if (self::$where_flg) {
-			  	// 更新
-					//フィールド名 = "値"の形式
-					if ($prepare_list === "") {
-						$prepare_list = "`" . $key . "` = ?";
-						$this->value_list[] = $value;
-					} else {
-						$prepare_list .= ", `" . $key . "` = ?";
-						$this->value_list[] = $value;
-					}
+		$flg=false;
+	
+		//クラス固有のプロパティ
+		$except = get_class_vars(get_class($this));
+		$all_object_var = get_object_vars($this);
+		foreach ($all_object_var as $key => $value) {
+			if (!array_key_exists($key, $except)){
+		 		if (is_array($this->$key)) {
+				//columnなどを処理する
+			} else if (self::$where_flg) {
+				// 更新
+				if ($prepare_list === "") {
+					$prepare_list = "`" . $key . "` = ?";
+					$this->value_list[] = $value;
+				} else {
+					$prepare_list .= ", `" . $key . "` = ?";
+					$this->value_list[] = $value;
+				}
 
 			  	} else {
-				print $this->$key;
 				//新規登録
 					if ($flg === false) {
 						$name_list	= "`" . $key . "`";
@@ -185,16 +185,13 @@ class Miniquent
 	 // 更新
 	if (self::$where_flg) {
 		$this->sql = "UPDATE $this->table SET  $prepare_list " .self::$where .";";
-
+	// 新規登録
 	} else {
    	   $this->sql = "INSERT INTO $this->table ($name_list) VALUES($prepare_list);";
    	}
-   	var_dump($this->value_list);
-	  $this->execute();
+   	// var_dump($this->value_list);
+	$this->execute();
   }
-
-
-
 
 
 	function sqlSet($data,$action)
@@ -203,6 +200,7 @@ class Miniquent
 		$name_list = "";
 		$prepare_list="";
 		$value_list=array();
+
 		//カラム指定がある場合(DELETEはなし)
 		if (isset($data['column']) === true && is_array($data['column']) === true) {
 			foreach ($data['column'] as $key=>$value) {
@@ -311,17 +309,6 @@ class Miniquent
 
 
 
-	/**
-	 * 指定したテーブルの全てを取得
-	 * @param  String $table テーブル名
-	 * @param  String $order_by 順番の指定。
-	 * @return Array        取得したデータの配列
-	 */
-
-
-
-
-
 	//@ref http://d.hatena.ne.jp/uunfo/20090204/1233728629
 	public function typeSelection($bind){
 		$type = \PDO::PARAM_STR;
@@ -353,7 +340,7 @@ class Miniquent
 		$trace_array = debug_backtrace();
 		if (count($trace_array) > 0)
 		{
-			$trace_str .= "\n\n ---- TRACE ----\n\n";
+			$trace_str .= "TRACE";
 			for ($i=0; $i < count($trace_array)-1; $i++)
 			{
 				$trace_str .= "file：" . (isset($trace_array[$i]['file']) ? $trace_array[$i]['file'] : '') . "\n";
