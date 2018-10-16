@@ -12,12 +12,13 @@ Laravelが使用しているO/Rマッパー・Eloquentモデルを真似て作�
 ユーザーデータの新規登録は、Eloquentとほぼ同じです。
 例えばid、name、score、ageというカラムを持つテーブルがあるとして
 
+```php
 $user = new Miniquent;
 $user->name = '山田太郎';
 $user->score = 78;
 $user->age = 24;
 $user->save();
-
+```
 
 で新規登録できます。
 

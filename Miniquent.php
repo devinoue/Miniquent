@@ -93,6 +93,17 @@ class Miniquent
 		return $this; 
 	}
 
+	static function where ($arg1,$arg2,$arg3)
+	{
+		if (!self::$where_flg) {
+			self::$where="WHERE $arg1 $arg2 '$arg3' ";
+		} else {
+			self::$where .= "AND $arg1 $arg2 '$arg3' ";
+		}
+		self::$where_flg=true;
+		return new static;
+	}
+
 	public function get($data = null){
 
 		//特に指定がなければ全部返す
@@ -128,17 +139,6 @@ class Miniquent
 
 	}
 
-
-	static function where ($arg1,$arg2,$arg3)
-	{
-		if (!self::$where_flg) {
-			self::$where="WHERE $arg1 $arg2 '$arg3'";
-		} else {
-			self::$where .= "AND WHERE $arg1 $arg2 '$arg3'";
-		}
-		self::$where_flg=true;
-		return new static;
-	}
 
 	public function delete()
 	{
