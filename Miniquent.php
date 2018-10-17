@@ -11,12 +11,16 @@
 require_once('config.php');
 class Miniquent
 {
+	private $pagenate;
+	private $data;
 	private $db;
 	private $table;
 	private $value_list;
 	private $sql;
+	private $left_join;
 	private $orderby;
 	private $limit;
+	private $offset;
 	private $column;
 	private static $where;
 	private static $where_flg;
@@ -95,27 +99,75 @@ class Miniquent
 
 	static function where ($arg1,$arg2,$arg3)
 	{
-		if (!self::$where_flg) {
-			self::$where="WHERE $arg1 $arg2 '$arg3' ";
-		} else {
-			self::$where .= "AND $arg1 $arg2 '$arg3' ";
+
+		$args = func_get_args();
+		if (count($args) == 2) {
+			array_splice($args, 1, 0, "=");
 		}
+
+		if (!self::$where_flg) {
+			self::$where .="WHERE";
+		} else {
+			self::$where .= "AND";
+		}
+		
+		foreach ($args as $arg) {
+			self::$where .= " $arg ";
+		}
+
 		self::$where_flg=true;
 		return new static;
 	}
 
-	public function get($data = null){
 
+	public function pagination($page_unit){
+		$this->pagenate = $page_unit;
+		$this->limit= "limit $this->pagenate";
+		if (isset($_GET['page'])) {$off = $_GET['page'] * $this->pagenate;}
+		else { $off =0; }
+		$this->offset = "OFFSET $off" ;
+		return $this;
+	}
+
+	public function link(){
+		// どう実装する？
+		//mysqlで全件検索し数を表示し
+		$page_num = $total_num / $this->pagenate;
+		$this->outPage($page_num,$this->active_page);
+		
+	}
+
+
+	public leftJoin($alt_table,$col){
+
+		$this->left_join = "LEFT JOIN $this->table ON $alt_table.$col = $this->table.$col ";
+
+		return $this;
+	}
+
+
+	// setter
+   public function __set($key, $value){
+		$this->data[$key] = $value;
+	}
+
+
+   
+
+
+	public function get($data = null){
 		//特に指定がなければ全部返す
 		if ($this->column == '' &&
 			self::$where == '' &&
-			$this->orderby == '' 
+			$this->orderby == '' &&
+			$this->limit == '' &&
+			$this->offset == ''
 			) {
 			$this->sql = "SELECT * FROM $this->table";
 			return $this->execute();
 		}
 
-		$this->sql = "SELECT * FROM $this->table ". self::$where . " $this->orderby $this->limit";
+		$this->sql = "SELECT * FROM $this->table ". self::$where . " $this->orderby $this->limit $this->offset";
 		print $this->sql;
 
 		return $this->execute();
@@ -152,13 +204,9 @@ class Miniquent
 		$prepare_list="";
 		$flg=false;
 	
-		//クラス固有のプロパティ
-		$except = get_class_vars(get_class($this));
-		$all_object_var = get_object_vars($this);
-		foreach ($all_object_var as $key => $value) {
-			if (!array_key_exists($key, $except)){
-		 		if (is_array($this->$key)) {
-				//columnなどを処理する
+		foreach ($test->data as $key=>$value) {
+			if (is_array($this->$key)) {
+			//columnなどを処理する
 			} else if (self::$where_flg) {
 				// 更新
 				if ($prepare_list === "") {
@@ -169,22 +217,22 @@ class Miniquent
 					$this->value_list[] = $value;
 				}
 
-			  	} else {
-				//新規登録
-					if ($flg === false) {
-						$name_list	= "`" . $key . "`";
-						$prepare_list	= "?";
-						$this->value_list[] = $value;
-						$flg=!$flg;
-					} else {
-						$name_list	.= ", `" . $key . "`";
-						$prepare_list	.= ", ?";
-						$this->value_list[] = $value;
-					}
+			} else {
+			//新規登録
+				if ($flg === false) {
+					$name_list	= "`" . $key . "`";
+					$prepare_list	= "?";
+					$this->value_list[] = $value;
+					$flg=!$flg;
+				} else {
+					$name_list	.= ", `" . $key . "`";
+					$prepare_list	.= ", ?";
+					$this->value_list[] = $value;
+				}
 
-			  }
-		  }
-	  }
+			}
+
+		}
 
 
 	 // 更新
