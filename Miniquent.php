@@ -16,14 +16,15 @@ class Miniquent
 	private $db;
 	private $table;
 	private $value_list;
+	public $column;
 	private $sql;
 	private $left_join;
 	private $orderby;
 	private $limit;
 	private $offset;
-	private $column;
 	private static $where;
 	private static $where_flg;
+
 	
 /**
  * @constructor
@@ -138,7 +139,7 @@ class Miniquent
 	}
 
 
-	public leftJoin($alt_table,$col){
+	public function leftJoin($alt_table,$col){
 
 		$this->left_join = "LEFT JOIN $this->table ON $alt_table.$col = $this->table.$col ";
 
@@ -150,9 +151,6 @@ class Miniquent
    public function __set($key, $value){
 		$this->data[$key] = $value;
 	}
-
-
-   
 
 
 	public function get($data = null){
@@ -167,7 +165,21 @@ class Miniquent
 			return $this->execute();
 		}
 
-		$this->sql = "SELECT * FROM $this->table ". self::$where . " $this->orderby $this->limit $this->offset";
+		// カラム用変数
+		$column_list='';
+		if ($this->column == null) {
+			$column_list='*';
+		} elseif(is_array($this->column)) {
+			foreach ($this->column as $col){
+				if(!$column_list){
+					$column_list = "$col ";
+				}else {
+					$column_list .= ", $col";
+				}
+			}
+		}
+
+		$this->sql = "SELECT $column_list FROM $this->table $this->left_join ". self::$where . " $this->orderby $this->limit $this->offset";
 		print $this->sql;
 
 		return $this->execute();

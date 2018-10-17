@@ -6,7 +6,9 @@ require_once('miniquent.php');
 
 
 $db = new Miniquent();
-$get_all = $db->pagination(5)->get();//全てのデータを取得
+$db->column[]="name";
+$get_all = $db->get();
+// $get_all = $db->pagination(5)->get();//全てのデータを取得
 var_dump($get_all);
 
 // 削除
