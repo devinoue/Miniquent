@@ -38,10 +38,10 @@ $user->save();
 例えばscoreが30以上のユーザーを表示したいときは……
 
 ```php
-$users = Miniquent::where('score','>','30');
+$users = Miniquent::where('score','>','30')->get();
 ```
 
-でOK。
+でOK。get()をチェーンするのを忘れずに。
 
 
 ## 削除
@@ -49,7 +49,8 @@ scoreが30未満の人だけ削除したいなら……
 
 
 ```php
-Miniquent::where('score','<','30');
+$user= Miniquent::where('score','<','30');
+$user->delete();
 ```
 
 
