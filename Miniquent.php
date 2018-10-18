@@ -14,18 +14,19 @@ require_once('paginator.php');
 class Miniquent
 {
 	public $column;
-	protected  $pagenate;
-	protected  $data;
-	protected  $db;
-	protected  $table;
-	protected  $value_list;
-	protected  $sql;
-	protected  $left_join;
-	protected  $orderby;
-	protected  $limit;
-	protected  $offset;
-	protected  static $where;
-	protected  static $where_flg;
+	protected $pagenate;
+	protected $data;
+	protected $db;
+	protected $table;
+	protected $value_list;
+	protected $sql;
+	protected $left_join;
+	protected $orderby;
+	protected $limit;
+	protected $offset;
+	protected static $where;
+	protected static $where_flg;
+	protected $primaryKey;
 
 	
 /**
@@ -42,7 +43,8 @@ class Miniquent
 		  exit ;
 		}
 
-		$where_flg = false;
+		$this->where_flg = false;
+		$this->primaryKey = 'id'
 	}
 
   
@@ -91,6 +93,34 @@ class Miniquent
 	public function limit ($num){
 		$this->limit = "limit $num";
 		return $this;
+	}
+
+	public function all (){
+		
+	}
+
+	public function first()
+	{
+		$this->limit="limit 1";
+		return $this->get();
+	}
+
+	public function find ($id){
+		$this->where($this->primaryKey,$id);
+		return $this;
+	}
+
+	public function destroy($id){
+		$del = $this->where($this->primaryKey,$id);
+		$del->delete();
+	}
+
+	public function count(){
+		$this->column = "count(*)";
+		$sql = $this->get(true);
+		$stmt = $this->db->query($sql);
+		$total_num = $stmt->fetchColumn();
+		return $total_num;
 	}
 
 
@@ -195,9 +225,9 @@ class Miniquent
 
 		// カラム用変数
 		$column_list='';
-		if ($this->column == null) {
+		if ($this->column == null || !is_array($this->column)) {
 			$column_list='*';
-		} elseif(is_array($this->column)) {
+		} else {
 			foreach ($this->column as $col){
 				if(!$column_list){
 					$column_list = "$col ";
