@@ -8,22 +8,24 @@
  * @license MIT 
  */
 
+
 require_once('config.php');
+require_once('paginator.php');
 class Miniquent
 {
-	private $pagenate;
-	private $data;
-	private $db;
-	private $table;
-	private $value_list;
 	public $column;
-	private $sql;
-	private $left_join;
-	private $orderby;
-	private $limit;
-	private $offset;
-	private static $where;
-	private static $where_flg;
+	protected  $pagenate;
+	protected  $data;
+	protected  $db;
+	protected  $table;
+	protected  $value_list;
+	protected  $sql;
+	protected  $left_join;
+	protected  $orderby;
+	protected  $limit;
+	protected  $offset;
+	protected  static $where;
+	protected  static $where_flg;
 
 	
 /**
@@ -39,20 +41,20 @@ class Miniquent
 		  echo $e->getMessage();
 		  exit ;
 		}
-		$this->table=TABLE;
+
 		$where_flg = false;
 	}
 
   
 
-	function execute()
+	protected function execute()
 	{
 		$sql = $this->sql;
 		$value_list = $this->value_list;
 
 		if ($this->value_list == null) {
 			$stmt = $this->db->query($this->sql);
-			return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+			return $stmt->fetchAll(\PDO::FETCH_OBJ);
 		}
 	
 		// 実行
@@ -69,7 +71,7 @@ class Miniquent
 
 			$this->db->commit();
 		} catch(Excetipn $e){
-		 $db->rollBack();
+			$db->rollBack();
 		}
 		
 		if(!$result) {
@@ -98,44 +100,80 @@ class Miniquent
 		return $this; 
 	}
 
-	static function where ($arg1,$arg2,$arg3)
+	static public function where ()
 	{
-
+		// 引数を抽出
 		$args = func_get_args();
-		if (count($args) == 2) {
-			array_splice($args, 1, 0, "=");
-		}
 
 		if (!self::$where_flg) {
 			self::$where .="WHERE";
 		} else {
 			self::$where .= "AND";
 		}
-		
-		foreach ($args as $arg) {
-			self::$where .= " $arg ";
+
+		switch (count($args)) {
+			case 2:
+				self::$where .= " $args[0] = '$args[1]' ";
+				break;
+			case 3:
+				self::$where .= " $args[0] $args[1] '$args[2]' ";
+				break;
 		}
 
 		self::$where_flg=true;
 		return new static;
 	}
 
+	public function orWhere(){
+		// 引数を抽出
+		$args = func_get_args();
+		if (!self::$where_flg) {
+			return $this;
+		} else {
+			self::$where .= "OR";
+		}
+
+		switch (count($args)) {
+			case 2:
+				self::$where .= " $args[0] = '$args[1]' ";
+			case 3:
+				self::$where .= " $args[0] $args[1] '$args[2]' ";
+		}
+
+		return $this;
+	}
 
 	public function pagination($page_unit){
+
 		$this->pagenate = $page_unit;
 		$this->limit= "limit $this->pagenate";
-		if (isset($_GET['page'])) {$off = $_GET['page'] * $this->pagenate;}
-		else { $off =0; }
+		if (isset($_GET['page'])){
+			$off = $_GET['page'] * $this->pagenate;
+		} else {
+			$off =0;
+		}
 		$this->offset = "OFFSET $off" ;
 		return $this;
 	}
 
-	public function link(){
-		// どう実装する？
-		//mysqlで全件検索し数を表示し
+	public function links(){
+
+
+		$this->column = "count(*)";
+		$sql = $this->get(true);
+		$stmt = $this->db->query($sql);
+		$total_num = $stmt->fetchColumn();
+		var_dump($total_num);
+
+		$page_length = ceil($total_num / $this->pagenate);
+		var_dump($var_dump);
+
+		$paginate = new Paginator($total_num, $this->pagenate , $_GET['page']);
+/*
+		if($this->pagenate <= 0) $this->pagenate=1;
 		$page_num = $total_num / $this->pagenate;
-		$this->outPage($page_num,$this->active_page);
-		
+		//$this->outPage($page_num,$this->active_page);
+*/		
 	}
 
 
@@ -153,17 +191,7 @@ class Miniquent
 	}
 
 
-	public function get($data = null){
-		//特に指定がなければ全部返す
-		if ($this->column == '' &&
-			self::$where == '' &&
-			$this->orderby == '' &&
-			$this->limit == '' &&
-			$this->offset == ''
-			) {
-			$this->sql = "SELECT * FROM $this->table";
-			return $this->execute();
-		}
+	public function get($sql_only_flg=false){
 
 		// カラム用変数
 		$column_list='';
@@ -182,25 +210,13 @@ class Miniquent
 		$this->sql = "SELECT $column_list FROM $this->table $this->left_join ". self::$where . " $this->orderby $this->limit $this->offset";
 		print $this->sql;
 
-		return $this->execute();
+		if (!$sql_only_flg) {
+			return $this->execute();
+		} else {
+			return $this->sql;
+		}
 
-		//
-		// if (is_array($data)){
-		//     $tables = ['p_main','company_product_code','p_main_yahoo','p_main_rakuten'];
-		//     $center_table = $tables[0];
-		//     $prop = $tables[1];
-		//     unset($tables[0],$tables[1]);
-		//     $sql = "FROM $center_table";
-			
-		//     foreach ($tables as $table){
-		//         $sql .= " LEFT JOIN $table ON $center_table.$prop = $table.$prop";
-		//     }
-		//     print $sql;
-	  
-		// } else {
-		// 	$from = $data;
-		// }
-
+		
 	}
 
 
@@ -217,27 +233,25 @@ class Miniquent
 		$flg=false;
 	
 		foreach ($test->data as $key=>$value) {
-			if (is_array($this->$key)) {
-			//columnなどを処理する
-			} else if (self::$where_flg) {
+			if (self::$where_flg) {
 				// 更新
 				if ($prepare_list === "") {
-					$prepare_list = "`" . $key . "` = ?";
+					$prepare_list = "`$key` = ?";
 					$this->value_list[] = $value;
 				} else {
-					$prepare_list .= ", `" . $key . "` = ?";
+					$prepare_list .= ", `$key` = ?";
 					$this->value_list[] = $value;
 				}
 
 			} else {
 			//新規登録
 				if ($flg === false) {
-					$name_list	= "`" . $key . "`";
+					$name_list	= "`$key`";
 					$prepare_list	= "?";
 					$this->value_list[] = $value;
 					$flg=!$flg;
 				} else {
-					$name_list	.= ", `" . $key . "`";
+					$name_list	.= ", `$key`";
 					$prepare_list	.= ", ?";
 					$this->value_list[] = $value;
 				}
@@ -254,7 +268,7 @@ class Miniquent
 	} else {
    	   $this->sql = "INSERT INTO $this->table ($name_list) VALUES($prepare_list);";
    	}
-   	// var_dump($this->value_list);
+
 	$this->execute();
   }
 
