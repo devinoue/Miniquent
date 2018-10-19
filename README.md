@@ -10,12 +10,22 @@ Laravelが使用しているO/Rマッパー・Eloquentモデルを真似て作�
 まずはデータベースの情報をconfig.phpに書いてください。
 必要な情報はデータベース名、ユーザー名、パスワードで、その他の情報は必要に応じて書き加えてください。
 
-
 ## Miniquentクラスを継承する
 同梱しているPerson.phpを開いてください。
 Miniquentクラスを継承しつつも、書き加えているのは`$table`だけです。
 Miniquentクラスは子クラスに一つのテーブルを割り当てて使用します。
 
+**クラス一つ = テーブル一つ**
+
+として管理していきます。
+今回は`Person`というクラスを作っていますが、名前は好きにつけても大丈夫です。
+`test.php`に使用例を記述していますが、Miniquentの子クラスを使用するために、以下の宣言を書いてください。
+
+```PHP
+require_once "vendor/autoload.php";
+
+use Miniquent\Person;
+```
 
 ## 新規登録。
 
@@ -30,7 +40,7 @@ $user->age = 24;
 $user->save(); 
 ```
 
-で新規登録できます。
+これで新規登録できます。
 
 ## 更新
 
@@ -44,12 +54,13 @@ $user->save();
 
 `find`メソッドを使えば、自動的に`id`というカラムと結び付けられて使用できます。
 ```PHP
-$user = Miniquent::where(4);
+$user = Miniquent::find(4);
 $user->score = 32;
 $user->save();
 ```
 もしもid以外のカラムを使用したいときは、
-継承する子クラスに$primaryKeyプロパティを書き加えてください。
+継承する子クラスに`$primaryKey`プロパティを書き加えてください。
+
 
 ```PHP
 public $primaryKey = 'name';
