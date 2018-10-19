@@ -110,6 +110,7 @@ $users = Miniquent::where('score','>','40')->limit(2)->orderBy('score','desc')->
 
 ```PHP
 $users=Miniquent::where('score','>','30')->paginate(5);
+$users=Miniquent::where('score','>','10')->paginate(5);
 
 foreach($users->get() as $user){
     print "名前 : $user->name スコア : $user->score<br>";
