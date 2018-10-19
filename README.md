@@ -109,7 +109,6 @@ $users = Miniquent::where('score','>','40')->limit(2)->orderBy('score','desc')->
 ページネーションもお手軽にできますが、多少本家Eloquentモデルと異なる使用法になります。
 
 ```PHP
-$users=Miniquent::where('score','>','30')->paginate(5);
 $users=Miniquent::where('score','>','10')->paginate(5);
 
 foreach($users->get() as $user){
