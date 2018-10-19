@@ -10,9 +10,6 @@ define('DEBUG_MODE','1');
 //プロジェクトの名前
 define('THIS_PROJECT_NAME','Miniquent');
 
-// テーブル名
-define('TABLE','people');
-
 //MySQL
 if (DEBUG_MODE == 1) {
 	// 開発環境

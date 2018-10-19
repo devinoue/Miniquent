@@ -1,6 +1,8 @@
 <?php
 
-require_once ("miniquent.php");
+namespace Miniquent;
+
+//require_once ("miniquent.php");
 
 class Person extends Miniquent {
 

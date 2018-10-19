@@ -1,5 +1,7 @@
 <?php
 
+namespace Miniquent;
+
 /**
  * Eloquentモデル・ライクなO/Rマッパーです。
  * PDO拡張クラスを使用して安全なデータベースの接続と管理をします。
@@ -7,17 +9,15 @@
  * @author Masaharu Inoue <pasteur1822@gmail.com>
  * @license MIT 
  */
+require_once ("config.php");
 
-
-require_once('config.php');
-require_once('paginator.php');
 class Miniquent
 {
+	protected $table = 'users';
 	public $column;
 	protected $pagenate;
 	protected $data;
 	protected $db;
-	protected $table;
 	protected $value_list;
 	protected $sql;
 	protected $left_join;
@@ -26,8 +26,11 @@ class Miniquent
 	protected $offset;
 	protected static $where;
 	protected static $where_flg;
-	protected $primaryKey;
-
+	protected $perPage;
+    protected $active_page;
+	protected $page_length;
+	protected $primaryKey = 'id';
+	protected $include_pager_file = "page_template.php";
 	
 /**
  * @constructor
@@ -44,7 +47,7 @@ class Miniquent
 		}
 
 		$this->where_flg = false;
-		$this->primaryKey = 'id'
+
 	}
 
   
@@ -178,7 +181,7 @@ class Miniquent
 		$this->pagenate = $page_unit;
 		$this->limit= "limit $this->pagenate";
 		if (isset($_GET['page'])){
-			$off = $_GET['page'] * $this->pagenate;
+			$off = $this->pagenate * ($_GET['page']-1) ??  0;
 		} else {
 			$off =0;
 		}
@@ -188,22 +191,30 @@ class Miniquent
 
 	public function links(){
 
-
-		$this->column = "count(*)";
+		// 総数の計算
+		$this->column[] = "count(*)";
+		$tmp_limit = $this->limit;
+		$this->limit = "";
+		$tmp_offset = $this->offset;
+		$this->offset = "";
 		$sql = $this->get(true);
 		$stmt = $this->db->query($sql);
-		$total_num = $stmt->fetchColumn();
-		var_dump($total_num);
+		$total_num = (int) $stmt->fetchColumn();
 
-		$page_length = ceil($total_num / $this->pagenate);
-		var_dump($var_dump);
+		$this->limit = $tmp_limit ;
+		$this->offset = $tmp_offset;
+    	$this->active_page=$_GET['page'] ?? 1;
 
-		$paginate = new Paginator($total_num, $this->pagenate , $_GET['page']);
-/*
-		if($this->pagenate <= 0) $this->pagenate=1;
-		$page_num = $total_num / $this->pagenate;
-		//$this->outPage($page_num,$this->active_page);
-*/		
+		$this->page_length = ceil($total_num/$this->pagenate);
+
+		if ($this->page_length < 1){
+			$this->page_length=1;
+		}
+
+		ob_start();
+		include $this->include_pager_file;
+		ob_end_flush();
+
 	}
 
 

@@ -1,16 +1,18 @@
 <?php
 
-require_once('Person.php');
+require_once "vendor/autoload.php";
+
+use Miniquent\Person;
 
 
 $db = new Person();
 
-$db->links();
 
-// $db->column[]="name";
-// $get_all = $db->get();
-$get_all = $db->pagination(5)->get();//全てのデータを取得
+
+$st = $db->pagination(3);//全てのデータを取得
+$get_all = $st->get();
 var_dump($get_all);
+$st->links();
 
 // 削除
 $del = Person::where('name','太郎');
