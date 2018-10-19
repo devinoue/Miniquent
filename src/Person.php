@@ -2,8 +2,6 @@
 
 namespace Miniquent;
 
-//require_once ("miniquent.php");
-
 class Person extends Miniquent {
 
     // テーブル名を書き換えてください。
