@@ -13,7 +13,7 @@ require_once ("config.php");
 
 class Miniquent
 {
-	protected $table = 'users';
+	public $table = 'users';
 	public $column;
 	protected $pagenate;
 	protected $data;
@@ -176,7 +176,7 @@ class Miniquent
 		return $this;
 	}
 
-	public function pagination($page_unit){
+	public function paginate($page_unit){
 
 		$this->pagenate = $page_unit;
 		$this->limit= "limit $this->pagenate";
@@ -249,7 +249,6 @@ class Miniquent
 		}
 
 		$this->sql = "SELECT $column_list FROM $this->table $this->left_join ". self::$where . " $this->orderby $this->limit $this->offset";
-		print $this->sql;
 
 		if (!$sql_only_flg) {
 			return $this->execute();

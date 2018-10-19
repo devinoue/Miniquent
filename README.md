@@ -1,3 +1,5 @@
+![miniquent](https://my-portfolio.site/images/github/miniquent.png)
+
 # Miniquentとは？
 Laravelが使用しているO/Rマッパー・Eloquentモデルを真似て作られた、最小構成バージョンEloquentライクなライブラリです。
 
@@ -5,7 +7,15 @@ Laravelが使用しているO/Rマッパー・Eloquentモデルを真似て作�
 
 # 使用法
 ## 初期設定
-まずはデータベースの情報をconfig.phpに書いてください。必要なのはデータベース名、ユーザー名、パスワード、テーブル名です。
+まずはデータベースの情報をconfig.phpに書いてください。
+必要な情報はデータベース名、ユーザー名、パスワードで、その他の情報は必要に応じて書き加えてください。
+
+
+## Miniquentクラスを継承する
+同梱しているPerson.phpを開いてください。
+Miniquentクラスを継承しつつも、書き加えているのは`$table`だけです。
+Miniquentクラスは子クラスに一つのテーブルを割り当てて使用します。
+
 
 ## 新規登録。
 
@@ -25,13 +35,26 @@ $user->save();
 ## 更新
 
 更新もEloquentモデルと同じです。
-(ただfindメソッドなどはまだ未実装)
 
 ```php
 $user = Miniquent::where('id',4);
 $user->score = 32;
 $user->save();
 ```
+
+`find`メソッドを使えば、自動的に`id`というカラムと結び付けられて使用できます。
+```PHP
+$user = Miniquent::where(4);
+$user->score = 32;
+$user->save();
+```
+もしもid以外のカラムを使用したいときは、
+継承する子クラスに$primaryKeyプロパティを書き加えてください。
+
+```PHP
+public $primaryKey = 'name';
+```
+これで`find`メソッドの引数は`name`カラムと結び付けられます。
 
 
 ## 表示
@@ -59,14 +82,33 @@ Eloquentモデル同様に、メソッドチェーンも可能です。
 たとえばscoreが30以上の人を二人、スコアで降順に抽出したいなら……
 
 ```php
-$users = DB::where('score','>','40')->limit(2)->orderBy('score','desc')->get();
+$users = Miniquent::where('score','>','40')->limit(2)->orderBy('score','desc')->get();
 ```
 
 **最後のget()は必要なので、忘れないでください。**
 (私もLaravelでよく忘れるので)
 
 
+## ページネーション
+ページネーションもお手軽にできますが、多少本家Eloquentモデルと異なる使用法になります。
+
+```PHP
+$users=Miniquent::where('score','>','30')->paginate(5);
+
+foreach($users->get() as $user){
+    print "名前 : $user->name スコア : $user->score<br>";
+}
+
+$users->links();
+```
+[完成画像](https://my-portfolio.site/images/github/miniquent_pager.png)
+
+このようにページネーションのリンクも`links()`メソッド一つで自動的に表示してくれます。
+なお、ページネーションのテンプレートはBootstrap4の構成にしていますので`src`ディレクトリの中の`page_template.php`を適宜書き換えてください。
+
+
+
 
 # ORMとしての価値
-現在の所色々未実装な部分もあるので、Eloquentモデルほど高機能ではありませんが、「とりあえずサクッとDBを使いたい」という方にオススメです。
+現在の所、Eloquentモデルの主要な部分を抽出しています。Eloquentモデルほど高機能ではありませんが、「とりあえずサクッとDBを使いたい」という方に大変オススメです。
 
