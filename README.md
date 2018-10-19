@@ -112,7 +112,7 @@ foreach($users->get() as $user){
 
 $users->links();
 ```
-[完成画像](https://my-portfolio.site/images/github/miniquent_pager.png)
+![完成画像](https://my-portfolio.site/images/github/miniquent_pager.png)
 
 このようにページネーションのリンクも`links()`メソッド一つで自動的に表示してくれます。
 なお、ページネーションのテンプレートはBootstrap4の構成にしていますので`src`ディレクトリの中の`page_template.php`を適宜書き換えてください。
