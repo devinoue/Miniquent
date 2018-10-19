@@ -10,7 +10,7 @@ Laravelが使用しているO/Rマッパー・Eloquentモデルを真似て作�
 まずはデータベースの情報をconfig.phpに書いてください。
 必要な情報はデータベース名、ユーザー名、パスワードで、その他の情報は必要に応じて書き加えてください。
 
-次にComposerでinstallします。
+次にComposerでvendorディレクトリをinstallします。
 ```bash
 composer install
 ```
