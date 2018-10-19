@@ -10,6 +10,11 @@ Laravelが使用しているO/Rマッパー・Eloquentモデルを真似て作�
 まずはデータベースの情報をconfig.phpに書いてください。
 必要な情報はデータベース名、ユーザー名、パスワードで、その他の情報は必要に応じて書き加えてください。
 
+次にComposerでinstallします。
+```bash
+composer install
+```
+
 ## Miniquentクラスを継承する
 同梱しているPerson.phpを開いてください。
 Miniquentクラスを継承しつつも、書き加えているのは`$table`だけです。
