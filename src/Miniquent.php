@@ -192,17 +192,10 @@ class Miniquent
 	public function links(){
 
 		// 総数の計算
-		$this->column[] = "count(*)";
-		$tmp_limit = $this->limit;
-		$this->limit = "";
-		$tmp_offset = $this->offset;
-		$this->offset = "";
-		$sql = $this->get(true);
+		$sql = "SELECT count(*) FROM $this->table $this->left_join ". self::$where . " $this->orderby";
 		$stmt = $this->db->query($sql);
 		$total_num = (int) $stmt->fetchColumn();
 
-		$this->limit = $tmp_limit ;
-		$this->offset = $tmp_offset;
     	$this->active_page=$_GET['page'] ?? 1;
 
 		$this->page_length = ceil($total_num/$this->pagenate);
