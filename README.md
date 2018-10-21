@@ -1,5 +1,5 @@
 <p align="center">
-    ![miniquent](https://my-portfolio.site/images/github/miniquent.jpg)
+![miniquent](https://my-portfolio.site/images/github/miniquent.jpg)
 </p>
 
 # Miniquentとは？
