@@ -1,4 +1,4 @@
-![miniquent](https://my-portfolio.site/images/github/miniquent.png)
+<p align="center">![miniquent](https://my-portfolio.site/images/github/miniquent.jpg)</p>
 
 # Miniquentとは？
 Laravelが使用しているO/Rマッパー・Eloquentモデルを真似て作られた、最小構成バージョンEloquentライクなライブラリです。
