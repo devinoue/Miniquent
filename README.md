@@ -80,6 +80,11 @@ public $primaryKey = 'name';
 
 ```php
 $users = Miniquent::where('score','>','30')->get();
+
+foreach($users as $user) {
+    print "名前 : $user->name スコア $user->score<br>";
+}
+
 ```
 
 でOK。get()をチェーンするのを忘れずに。
