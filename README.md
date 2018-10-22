@@ -10,7 +10,7 @@ Laravelが使用しているO/Rマッパー・Eloquentモデルを真似て作�
 # 使用法
 ## 初期設定
 まずはデータベースの情報をconfig.phpに書いてください。
-必要な情報はデータベース名、ユーザー名、パスワードで、その他の情報は必要に応じて書き加えてください。
+データベース名、ユーザー名、パスワードで、その他の情報は必要に応じて書き加えてください。
 
 次にComposerでvendorディレクトリをinstallします。
 ```bash
@@ -80,6 +80,11 @@ public $primaryKey = 'name';
 
 ```php
 $users = Miniquent::where('score','>','30')->get();
+
+foreach($users as $user) {
+    print "名前 : $user->name スコア $user->score<br>";
+}
+
 ```
 
 でOK。get()をチェーンするのを忘れずに。
