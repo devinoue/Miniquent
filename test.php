@@ -20,9 +20,9 @@ use Miniquent\Person;
 
 <div style="width:60%;margin:30px auto;">
 <?php
-$users=Person::where('score','>','10')->paginate(5);
+$users = Person::where('score', '>', '10')->paginate(5);
 
-foreach($users->get() as $user){
+foreach ($users->get() as $user) {
     print "名前 : $user->name スコア : $user->score<br>";
 }
 
