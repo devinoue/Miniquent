@@ -5,7 +5,6 @@ namespace Miniquent;
 /**
  * Eloquentモデル・ライクなO/Rマッパーです。
  * PDO拡張クラスを使用して安全なデータベースの接続と管理をします。
- * 特に配列を利用することで、長大なSQL文の作成と、静的プレースホルダを用いた安全な接続が可能です。
  * @author Masaharu Inoue <pasteur1822@gmail.com>
  * @license MIT
  */
@@ -13,7 +12,9 @@ require_once "config.php";
 
 class Miniquent
 {
-    public $table = 'users';
+	public $table = 'users';
+    protected $primaryKey = 'id';
+    protected $include_pager_file = "page_template.php";
     public $column;
     protected $pagenate;
     protected $data;
@@ -29,8 +30,7 @@ class Miniquent
     protected $perPage;
     protected $active_page;
     protected $page_length;
-    protected $primaryKey = 'id';
-    protected $include_pager_file = "page_template.php";
+
 
 /**
  * @constructor
@@ -85,21 +85,28 @@ class Miniquent
         }
         return $ret;
     }
-/**
- * 一度に表示する量
- *
- * @param string $num    一度に表示したい数量
- * @return object
- */
+	/**
+	 * 一度に表示する量
+	 *
+	 * @param string $num    一度に表示したい数量
+	 * @return object
+	 */
     public function limit($num)
     {
         $this->limit = "limit $num";
         return $this;
     }
 
+	/**
+	 * 全件表示
+	 *
+	 * @return Object	全データをプロパティとして持つオブジェクト
+	 */
     public function all()
     {
-
+		$sql = "SELECT * FROM $this->table";
+        $stmt = $this->db->query($sql);
+        return $stmt->fetchAll(\PDO::FETCH_OBJ);
     }
 
     public function first()
