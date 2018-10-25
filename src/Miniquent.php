@@ -47,6 +47,8 @@ class Miniquent
         }
 
         $this->where_flg = false;
+        
+        return $this;
 
     }
 
@@ -225,7 +227,7 @@ class Miniquent
     public function leftJoin($alt_table, $col)
     {
 
-        $this->left_join = "LEFT JOIN $this->table ON $alt_table.$col = $this->table.$col ";
+        $this->left_join .= "LEFT JOIN $this->table ON $alt_table.$col = $this->table.$col ";
 
         return $this;
     }
