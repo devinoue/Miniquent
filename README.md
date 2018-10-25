@@ -34,7 +34,7 @@ require_once "vendor/autoload.php";
 use Miniquent\Person;
 ```
 
-## 新規登録。
+## 新規登録
 
 ユーザーデータの新規登録は、Eloquentとほぼ同じです。
 例えばid、name、score、ageというカラムを持つテーブルがあるとして
@@ -89,6 +89,11 @@ foreach($users as $user) {
 
 でOK。get()をチェーンするのを忘れずに。
 
+すべてのデータを取得しないなら、
+```php
+$users = Miniquent::all();
+```
+だけでOK。
 
 ## 削除
 scoreが30未満の人だけ削除したいなら……
