@@ -91,7 +91,7 @@ foreach($users as $user) {
 
 すべてのデータを取得しないなら、
 ```php
-$users = Miniquent::all();
+$users = (new Person)->all();
 ```
 だけでOK。
 
