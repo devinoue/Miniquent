@@ -3,7 +3,7 @@
 </p>
 
 # Miniquentとは？
-Laravelが使用しているO/Rマッパー・Eloquentモデルを真似て作られた、最小構成バージョンEloquentライクなライブラリです。
+Laravelが使用しているO/Rマッパー・Eloquentモデルを真似て作られた、最小構成バージョンEloquentライクなORマッパーライブラリです。
 
 使用感はEloquentそっくりなので、Laravelに慣れていて「DB操作が必要なちょっとしたサービスを作りたい」という人にぴったりです。
 
