@@ -12,6 +12,7 @@ require_once "config.php";
 
 class Miniquent
 {
+    // デフォルトのテーブル名
 	public $table = 'users';
     protected $primaryKey = 'id';
     protected $include_pager_file = "page_template.php";
@@ -226,11 +227,12 @@ class Miniquent
 
     public function leftJoin($alt_table, $col)
     {
-
         $this->left_join .= "LEFT JOIN $this->table ON $alt_table.$col = $this->table.$col ";
 
         return $this;
     }
+
+
 
     // setter
     public function __set($key, $value)
