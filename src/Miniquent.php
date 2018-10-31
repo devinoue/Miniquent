@@ -13,8 +13,12 @@ require_once "config.php";
 class Miniquent
 {
     // デフォルトのテーブル名
-	public $table = 'users';
+    public $table = 'users';
+    
+    // デフォルトの主キー
     protected $primaryKey = 'id';
+
+    // デフォルトのページテンプレート
     protected $include_pager_file = "page_template.php";
     public $column;
     protected $pagenate;
