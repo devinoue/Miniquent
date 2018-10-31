@@ -99,7 +99,7 @@ class Miniquent
         return $ret;
     }
 	/**
-	 * 一度に表示する量
+	 * LIMIT句(取得データの行数を制限)の追加をする
 	 *
 	 * @param string $num    一度に表示したい数量
 	 * @return object
