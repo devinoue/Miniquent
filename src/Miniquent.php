@@ -57,6 +57,12 @@ class Miniquent
 
     }
 
+    /**
+     * 実行メソッド
+     * 完成したSQL文を実行する
+     *
+     * @return void
+     */
     protected function execute()
     {
         $sql = $this->sql;
