@@ -128,6 +128,11 @@ class Miniquent
         return $this->get();
     }
 
+    public static function __callStatic($method, $args)
+    {
+    	print "Hello";
+    }
+
     public function find($id)
     {
         $this->where($this->primaryKey, $id);
